@@ -1,2 +1,3 @@
-# beamer_examples
-Examples of using Beamer package
+# Beamer Examples
+
+Examples of using [beamer package](https://github.com/slovnicki/beamer)
