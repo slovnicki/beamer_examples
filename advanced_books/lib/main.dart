@@ -25,12 +25,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       routerDelegate: BeamerRouterDelegate(
-        initialLocation: initialLocation,
+        beamLocations: beamLocations,
         notFoundPage: notFoundPage,
       ),
-      routeInformationParser: BeamerRouteInformationParser(
-        beamLocations: beamLocations,
-      ),
+      routeInformationParser: BeamerRouteInformationParser(),
     );
   }
 }
