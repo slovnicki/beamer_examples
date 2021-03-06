@@ -272,16 +272,19 @@ class MyApp extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: _isAuthenticated,
       builder: (context, isAuthenticated, child) {
+        var routerDelegate = BeamerRouterDelegate(
+          beamLocations: beamLocations,
+          notFoundPage: notFoundPage,
+          guards: [authGuard],
+        );
         return AuthenticationStateProvider(
           isAuthenticated: _isAuthenticated,
           child: MaterialApp.router(
             debugShowCheckedModeBanner: false,
-            routerDelegate: BeamerRouterDelegate(
-              beamLocations: beamLocations,
-              notFoundPage: notFoundPage,
-              guards: [authGuard],
-            ),
+            routerDelegate: routerDelegate,
             routeInformationParser: BeamerRouteInformationParser(),
+            backButtonDispatcher:
+                BeamerBackButtonDispatcher(delegate: routerDelegate),
           ),
         );
       },
