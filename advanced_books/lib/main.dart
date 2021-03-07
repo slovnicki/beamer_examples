@@ -22,13 +22,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var routerDelegate = BeamerRouterDelegate(
+      beamLocations: beamLocations,
+      notFoundPage: notFoundPage,
+    );
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      routerDelegate: BeamerRouterDelegate(
-        beamLocations: beamLocations,
-        notFoundPage: notFoundPage,
-      ),
+      routerDelegate: routerDelegate,
       routeInformationParser: BeamerRouteInformationParser(),
+      backButtonDispatcher:
+          BeamerBackButtonDispatcher(delegate: routerDelegate),
     );
   }
 }

@@ -79,10 +79,16 @@ class _BeamerAnimatedRailState extends State<BeamerAnimatedRail> {
     _beamLocations = widget.items.map((e) => e.location).toList();
     locationsStack = [];
     locationsStack.add(selectedIndexNotifier.value);
+    var routerDelegate = BeamerRouterDelegate(beamLocations: _beamLocations);
     _beamer = Beamer(
       key: _beamerKey,
       beamLocations: _beamLocations,
+      routerDelegate: routerDelegate,
     );
+    routerDelegate.addListener(() {
+      selectedIndexNotifier.value =
+          _beamLocations.indexOf(routerDelegate.currentLocation);
+    });
   }
 
   @override
@@ -99,62 +105,45 @@ class _BeamerAnimatedRailState extends State<BeamerAnimatedRail> {
     }
   }
 
-  void _changeIndex(int index, {bool addToStack = true}) {
+  void _changeIndex(int index) {
     _beamerKey.currentState.routerDelegate.beamTo(_beamLocations[index]);
-    print('selectedIndexNotifier ${selectedIndexNotifier.value}');
     selectedIndexNotifier.value = index;
-    if (addToStack) {
-      locationsStack.add(index);
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        var canPop = await _beamerKey.currentState.routerDelegate.popRoute();
-        var popStack = locationsStack.length > 1 || canPop;
-
-        if (!canPop && locationsStack.length > 1) {
-          locationsStack.removeAt(locationsStack.length - 1);
-          _changeIndex(locationsStack[locationsStack.length - 1],
-              addToStack: false);
-        }
-        return Future.value(!popStack);
-      },
-      child: Material(
-        type: MaterialType.card,
-        child: Container(
-          child: LayoutBuilder(
-            builder: (cx, constraints) {
-              return Stack(
-                alignment: widget.direction == TextDirection.ltr
-                    ? Alignment.centerLeft
-                    : Alignment.centerRight,
-                children: [
-                  _beamer,
-                  ValueListenableBuilder<int>(
-                    valueListenable: selectedIndexNotifier,
-                    builder: (cx, index, _) => AnimatedRailRaw(
-                      constraints: constraints,
-                      items: widget.items,
-                      width: widget.width,
-                      activeColor: widget.activeColor,
-                      iconColor: widget.iconColor,
-                      background: widget.background,
-                      direction: widget.direction,
-                      maxWidth: widget.maxWidth,
-                      selectedIndex: index,
-                      iconBackground: widget.iconBackground,
-                      onTap: _changeIndex,
-                      expand: widget.expand,
-                      isStatic: widget.isStatic,
-                    ),
-                  )
-                ],
-              );
-            },
-          ),
+    return Material(
+      type: MaterialType.card,
+      child: Container(
+        child: LayoutBuilder(
+          builder: (cx, constraints) {
+            return Stack(
+              alignment: widget.direction == TextDirection.ltr
+                  ? Alignment.centerLeft
+                  : Alignment.centerRight,
+              children: [
+                _beamer,
+                ValueListenableBuilder<int>(
+                  valueListenable: selectedIndexNotifier,
+                  builder: (cx, index, _) => AnimatedRailRaw(
+                    constraints: constraints,
+                    items: widget.items,
+                    width: widget.width,
+                    activeColor: widget.activeColor,
+                    iconColor: widget.iconColor,
+                    background: widget.background,
+                    direction: widget.direction,
+                    maxWidth: widget.maxWidth,
+                    selectedIndex: index,
+                    iconBackground: widget.iconBackground,
+                    onTap: _changeIndex,
+                    expand: widget.expand,
+                    isStatic: widget.isStatic,
+                  ),
+                )
+              ],
+            );
+          },
         ),
       ),
     );
